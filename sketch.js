@@ -1,64 +1,99 @@
 const Engine = Matter.Engine;
-const World= Matter.World;
+const World = Matter.World;
 const Bodies = Matter.Bodies;
+const Constraint = Matter.Constraint;
 
 var engine, world;
-var box1, pig1;
-var backgroundImg,platform;
+var holder,ball,ground;
 
-function preload() {
-    backgroundImg = loadImage("sprites/bg.png");
-}
+function setup() {
+  createCanvas(400,400);
+  engine = Engine.create();
+  world = engine.world;
 
-function setup(){
-    var canvas = createCanvas(1200,400);
-    engine = Engine.create();
-    world = engine.world;
+  var ground_options={
+    isStatic : true
+  }
 
 
-    ground = new Ground(600,height,1200,20);
-    platform = new Ground(150, 305, 300, 170);
+  var holder_options={
+    isStatic: true
+  }
 
-    box1 = new Box(700,320,70,70);
-    box2 = new Box(920,320,70,70);
-    pig1 = new Pig(810, 350);
-    log1 = new Log(810,260,300, PI/2);
+  ground = Bodies.rectangle(200,330,400,20,ground_options)
+  World.add(world,ground);
 
-    box3 = new Box(700,240,70,70);
-    box4 = new Box(920,240,70,70);
-    pig3 = new Pig(810, 220);
+holder = Bodies.rectangle(200,100,200,20,holder_options);
+World.add(world,holder);
 
-    log3 =  new Log(810,180,300, PI/2);
+var ball_options = {
 
-    box5 = new Box(810,160,70,70);
-    log4 = new Log(760,120,150, PI/7);
-    log5 = new Log(870,120,150, -PI/7);
-
-    bird = new Bird(100,100);
+  restitution : 1.0,
+  density : 1.0
 
 }
 
-function draw(){
-    background(backgroundImg);
-    Engine.update(engine);
-    console.log(box2.body.position.x);
-    console.log(box2.body.position.y);
-    console.log(box2.body.angle);
-    box1.display();
-    box2.display();
-    ground.display();
-    pig1.display();
-    log1.display();
+ball  = Bodies.circle(220,200,40,ball_options);
+World.add(world,ball);
 
-    box3.display();
-    box4.display();
-    pig3.display();
-    log3.display();
 
-    box5.display();
-    log4.display();
-    log5.display();
-
-    bird.display();
-    platform.display();
+var options = {
+  bodyA : ball,
+  bodyB : holder,
+  stiffness: 0.004,
+  length : 100
 }
+var string = Constraint.create(options);
+World.add(world,string);
+
+fill("WHite");
+}
+
+
+function draw() {
+  background(0); 
+  Engine.update(engine);
+
+
+  text("Press space bar to oscillate the pendulam to left and right with mouse",10,20);
+  text("Press Enter to stop the Pendulum from oscillating",100,50);
+
+  fill ("brown");
+rectMode(CENTER);
+rect(holder.position.x,holder.position.y,200,20);
+
+fill(0);
+rectMode(CENTER);
+rect(ground.position.x,ground.position.y,400,20);
+
+
+fill("blue");
+ellipseMode(RADIUS);
+ellipse(ball.position.x,ball.position.y,40);
+
+strokeWeight(8);
+stroke("white");
+line(ball.position.x,ball.position.y,holder.position.x,holder.position.y)
+
+
+
+
+if(keyCode===32){
+ball.position.y = mouseY;
+ball.position.x = mouseX;
+}
+
+else if (keyCode === ENTER){
+ball.position.x = 200;
+
+}
+
+}
+
+
+
+
+
+
+
+
